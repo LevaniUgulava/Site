@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\Mail\LoginRegisterEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
@@ -31,7 +32,6 @@ class Authcontroller extends Controller
         ]);
         Auth::attempt(['name' => $request->name, 'password' => $request->password]);
         return redirect('/home');
-
     }
 
     public function login(LoginRequest $request)
@@ -41,8 +41,7 @@ class Authcontroller extends Controller
             return redirect()->back()->with('message', 'Cant Access');
         }
         Auth::login($user);
-
+        LoginRegisterEvent::dispatch($user, $user->name);
         return redirect('/home');
-
     }
 }
